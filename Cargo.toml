@@ -1,0 +1,7 @@
+[package]
+name = "rust_db"
+version = "0.1.0"
+authors = ["Lucio Franco <lucio.franco@du.edu>"]
+
+[dependencies]
+hyper = "0.7"
