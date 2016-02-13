@@ -15,17 +15,3 @@ impl Router {
         self.handlers.push(handler);
     }
 }
-
-#[cfg(test)]
-mod test {
-    use super::{Router, Request, Response};
-
-    #[test]
-    fn basics() {
-        let mut router = Router::new();
-        fn handler(req: Request, res: Response) {
-            assert!(true);
-        }
-        router.add(handler);
-    }
-}

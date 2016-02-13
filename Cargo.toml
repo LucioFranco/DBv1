@@ -5,3 +5,6 @@ authors = ["Lucio Franco <lucio.franco@du.edu>"]
 
 [dependencies]
 hyper = "0.7"
+log = "*"
+bincode="*"
+rustc-serialize = "0.3.*"
