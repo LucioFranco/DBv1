@@ -17,7 +17,4 @@ fn main() {
     let log = logger::Builder::new(LogLevelFilter::Info);
     log.enable();
     info!("Started Database");
-    let mut db = Database::new("/tmp/test", "hello");
-    db.create();
-
 }
