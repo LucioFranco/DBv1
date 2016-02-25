@@ -10,13 +10,13 @@ pub struct Database {
 
 impl Database {
     pub fn create(name: &str, config: DatabaseConfig) -> Result<Database, Error> {
-        info!("created new database: {}", d.name);
+        info!("created new database: {}", &name);
         let d = Database { name: name.to_string(), config: config.clone() };
 
         DirBuilder::new()
             .recursive(true)
             .create(Path::new(&config.path).join(name)).unwrap();
-        
+
         Ok(d)
     }
 
@@ -25,7 +25,7 @@ impl Database {
             info!("loaded database: {}", name.to_string());
             Ok(Database { name: name.to_string(), config:  config })
         } else {
-            warn!("could not load database: {} at: {}", name, &config.path);
+            error!("could not load database: {} at {}", name, &config.path);
             Err(Error::LoadDatabase)
         }
     }

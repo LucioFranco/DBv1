@@ -19,6 +19,6 @@ fn main() {
     info!("Started Database");
 
     let db = Database::create("test_db", DatabaseConfig::from("/tmp".to_string())).unwrap();
-    Table::create("user", &db).unwrap();
+    Table::create("user", 0, &db).unwrap();
 
 }
