@@ -10,12 +10,13 @@ pub struct Database {
 
 impl Database {
     pub fn create(name: &str, config: DatabaseConfig) -> Result<Database, Error> {
+        info!("created new database: {}", d.name);
         let d = Database { name: name.to_string(), config: config.clone() };
+
         DirBuilder::new()
             .recursive(true)
             .create(Path::new(&config.path).join(name)).unwrap();
-        println!("{:?}", Path::new(&config.path).join(name));
-        info!("created new database: {}", d.name);
+        
         Ok(d)
     }
 
