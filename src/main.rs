@@ -8,7 +8,6 @@ mod logger;
 mod server;
 mod storage;
 
-use api::Api;
 use log::LogLevelFilter;
 use storage::database::*;
 use storage::table::Table;

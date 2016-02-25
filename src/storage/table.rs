@@ -6,11 +6,13 @@ use bincode::rustc_serialize::{encode_into, decode_from};
 
 use super::Error;
 use super::database::Database;
+use super::row::Row;
 
 pub struct Table<'a> {
     database: &'a Database,
     name: String,
-    meta_data: TableMetadata
+    meta_data: TableMetadata,
+    rows: Vec<Row>
 }
 
 #[derive(Clone, RustcDecodable, RustcEncodable)]
@@ -33,7 +35,8 @@ impl<'a> Table<'a> {
         Ok(Table {
             database: &db,
             name: name.to_string(),
-            meta_data: metadata.clone()
+            meta_data: metadata.clone(),
+            rows: Vec::new()
         })
     }
 
@@ -53,7 +56,8 @@ impl<'a> Table<'a> {
             Ok(Table {
                 database: db,
                 name: name.to_string(),
-                meta_data: metadata
+                meta_data: metadata,
+                rows: Vec::new() // TODO: actually encode rows
             })
         }else {
             error!("could not load table: {} at {}", &name, &path.to_str().unwrap());
