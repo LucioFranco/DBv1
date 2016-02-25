@@ -10,7 +10,7 @@ pub enum Error {
     LoadDatabase
 }
 
-impl From<io::Error> for Error{
+impl From<io::Error> for Error {
     fn from(err: io::Error) -> Self {
         Error::Io(err)
     }

@@ -1,8 +1,8 @@
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::fs::{DirBuilder, metadata};
 use super::Error;
-use super::DatabaseConfig;
 
+#[derive(Clone)]
 pub struct Database {
     name: String,
     config: DatabaseConfig
@@ -14,7 +14,7 @@ impl Database {
         DirBuilder::new()
             .recursive(true)
             .create(Path::new(&config.path).join(name)).unwrap();
-
+        println!("{:?}", Path::new(&config.path).join(name));
         info!("created new database: {}", d.name);
         Ok(d)
     }
@@ -33,17 +33,34 @@ impl Database {
         self.name.clone()
     }
 
-    pub fn get_path(&self) -> String {
-        self.config.path.clone()
+    pub fn get_path(&self) -> PathBuf {
+        Path::new(&self.config.path.clone()).join(&self.name)
     }
 }
 
+#[derive(Clone)]
+pub struct DatabaseConfig {
+    path: String
+}
+
+impl DatabaseConfig {
+    pub fn new(p: &str) -> Self {
+        DatabaseConfig { path: p.to_string() }
+    }
+}
+
+impl From<String> for DatabaseConfig {
+    fn from(p: String) -> Self {
+        DatabaseConfig { path: p }
+    }
+}
+
+
 #[cfg(test)]
 mod test {
-    use super::Database;
+    use super::*;
     use std::fs::{File, metadata};
     use std::path::Path;
-    use super::super::DatabaseConfig;
 
     #[test]
     fn create_db() {

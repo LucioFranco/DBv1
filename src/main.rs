@@ -10,11 +10,15 @@ mod storage;
 
 use api::Api;
 use log::LogLevelFilter;
-use storage::database::Database;
+use storage::database::*;
+use storage::table::Table;
 
 fn main() {
-    //let api = Api::new("127.0.0.1:5660");
     let log = logger::Builder::new(LogLevelFilter::Info);
     log.enable();
     info!("Started Database");
+
+    let db = Database::create("test_db", DatabaseConfig::from("/tmp".to_string())).unwrap();
+    Table::create("user", &db).unwrap();
+
 }
