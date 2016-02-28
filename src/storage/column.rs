@@ -1,5 +1,7 @@
 use super::types::Types;
+use bincode::rustc_serialize::{encode_into, decode_from};
 
+#[derive(Clone, Debug, PartialEq, RustcDecodable, RustcEncodable)]
 pub struct Column {
     name: String,
     col_type: Types

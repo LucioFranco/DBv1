@@ -1,4 +1,6 @@
+use bincode::rustc_serialize::{encode_into, decode_from};
 
+#[derive(Clone, Debug, PartialEq, RustcDecodable, RustcEncodable)]
 pub enum Types {
     Int,
     Float,
