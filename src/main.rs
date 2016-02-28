@@ -10,6 +10,7 @@ mod storage;
 
 use log::LogLevelFilter;
 use storage::database::*;
+use storage::column::Column;
 use storage::table::Table;
 
 fn main() {
@@ -18,6 +19,6 @@ fn main() {
     info!("Started Database");
 
     let db = Database::create("test_db", DatabaseConfig::from("/tmp".to_string())).unwrap();
-    Table::create("user", 0, &db).unwrap();
+    Table::create("user", 0, Vec::<Column>::new(), &db).unwrap();
 
 }
