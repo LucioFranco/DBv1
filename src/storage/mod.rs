@@ -1,3 +1,7 @@
+// TODO: Remove this and fix the dead code warnings
+#![allow(dead_code)]
+#![allow(unused_imports)]
+
 pub mod database;
 pub mod table;
 pub mod rows;

@@ -2,6 +2,8 @@ use super::column::Column;
 use super::table::Table;
 use std::io::{Write, Read, Seek};
 
+/// The Rows struct represents the file level implementation
+/// of the table
 pub struct Rows<B: Write + Read + Seek> {
     buf: B
 }
