@@ -6,27 +6,31 @@ use bincode::rustc_serialize::{encode_into, decode_from};
 
 use super::Error;
 use super::database::Database;
+use super::column::Column;
 use super::row::Row;
 
 pub struct Table<'a> {
     database: &'a Database,
     name: String,
-    meta_data: TableMetadata,
-    rows: Vec<Row>
+    meta_data: TableMetadata
 }
 
 #[derive(Clone, RustcDecodable, RustcEncodable)]
 struct TableMetadata {
-    EngineID: u8,
+    engine_id: u8,
+    columns: Vec<Column>
 }
 
 /// Table representation
 impl<'a> Table<'a> {
     /// Create table in database
-    pub fn create<'b>(name: &str, engineID: u8, db: &'b Database) -> Result<Table<'b>, Error> {
+    pub fn create<'b>(name: &str, engine_id: u8, columns: Vec<Column>, db: &'b Database) -> Result<Table<'b>, Error> {
         info!("creating table: {}", name);
 
-        let metadata = TableMetadata { EngineID: engineID };
+        let metadata = TableMetadata {
+            engine_id: engine_id,
+            columns: columns
+        };
 
         let mut buf = try!(File::create(db.get_path().clone().join(&name).with_extension("tbl")));
 
@@ -35,8 +39,7 @@ impl<'a> Table<'a> {
         Ok(Table {
             database: &db,
             name: name.to_string(),
-            meta_data: metadata.clone(),
-            rows: Vec::new()
+            meta_data: metadata.clone()
         })
     }
 
@@ -56,13 +59,22 @@ impl<'a> Table<'a> {
             Ok(Table {
                 database: db,
                 name: name.to_string(),
-                meta_data: metadata,
-                rows: Vec::new() // TODO: actually encode rows
+                meta_data: metadata
             })
         }else {
             error!("could not load table: {} at {}", &name, &path.to_str().unwrap());
             Err(Error::LoadTable)
         }
+    }
+
+    pub fn get_cols_sizes(&self) -> Vec<u32> {
+        let mut column_sizes = Vec::<u32>::new();
+
+        for v in &self.meta_data.columns {
+            column_sizes.push(v.size());
+        }
+
+        column_sizes
     }
 
     /// Get full file path including filename and ext
@@ -71,7 +83,7 @@ impl<'a> Table<'a> {
     }
 
     pub fn get_engine_id(&self) -> u8 {
-        self.meta_data.EngineID
+        self.meta_data.engine_id
     }
 
 }
@@ -81,14 +93,19 @@ mod test {
     use super::Table;
     use super::super::database::*;
     use std::fs::metadata;
+    use super::super::column::Column;
+    use super::super::types::Types;
 
     #[test]
     fn create_table() {
         let path = "/tmp/test1/";
         let name = "test_db3";
+        let mut columns = Vec::<Column>::new();
+        columns.push(Column::new("Name", Types::Char(10)));
+        columns.push(Column::new("Age", Types::Int));
 
         let db = Database::create(&name, DatabaseConfig::new(&path)).unwrap();
-        let table = Table::create("test_table1", 0, &db).unwrap();
+        let table = Table::create("test_table1", 0, columns, &db).unwrap();
 
         assert!(!metadata("/tmp/test1/test_db3/test_table1.tbl").unwrap().is_dir());
     }
@@ -98,8 +115,12 @@ mod test {
         let path = "/tmp/test1/";
         let name = "test_db4";
 
+        let mut columns = Vec::<Column>::new();
+        columns.push(Column::new("Name", Types::Char(10)));
+        columns.push(Column::new("Age", Types::Int));
+
         let db = Database::create(&name, DatabaseConfig::new(&path)).unwrap();
-        let table = Table::create("test_table1", 34, &db).unwrap();
+        let table = Table::create("test_table1", 34, columns, &db).unwrap();
 
         assert!(!metadata("/tmp/test1/test_db3/test_table1.tbl").unwrap().is_dir());
 
