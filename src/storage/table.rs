@@ -7,7 +7,7 @@ use bincode::rustc_serialize::{encode_into, decode_from};
 use super::Error;
 use super::database::Database;
 use super::column::Column;
-use super::row::Row;
+use super::rows::Rows;
 
 pub struct Table<'a> {
     database: &'a Database,
@@ -127,7 +127,6 @@ mod test {
         let table2 = Table::load("test_table1", &db).unwrap();
 
         assert_eq!(table.get_engine_id(), table2.get_engine_id());
-        println!("{:?}", &table.meta_data.columns);
-        assert_eq!(&table.meta_data.columns, &table2.meta_data.columns)
+        assert_eq!(&table.meta_data.columns, &table2.meta_data.columns);
     }
 }

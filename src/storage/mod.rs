@@ -1,6 +1,6 @@
 pub mod database;
 pub mod table;
-pub mod row;
+pub mod rows;
 pub mod column;
 pub mod types;
 
