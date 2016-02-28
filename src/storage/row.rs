@@ -1,11 +1,13 @@
 use super::column::Column;
+use super::table::Table;
 
-pub struct Row {
-    columns: Vec<Column>
+pub struct Rows<'a> {
+    table: Table<'a>
 }
 
-impl Row {
-    fn new() -> Self {
-        Row { columns: Vec::new() }
+// TODO: implement insert_row and select_row
+impl<'a> Rows<'a> {
+    pub fn new<'b>(table: Table<'b>) -> Rows<'b> {
+        // TODO: implement new rows
     }
 }
