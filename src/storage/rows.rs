@@ -5,7 +5,8 @@ use std::io::{Write, Read, Seek};
 /// The Rows struct represents the file level implementation
 /// of the table
 pub struct Rows<B: Write + Read + Seek> {
-    buf: B
+    buf: B,
+    // TODO:add column_size, header_offset 
 }
 
 // TODO: implement insert_row and select_row

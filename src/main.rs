@@ -3,9 +3,7 @@ extern crate rustc_serialize;
 #[macro_use]
 extern crate log;
 
-mod api;
 mod logger;
-mod server;
 mod storage;
 
 use log::LogLevelFilter;
