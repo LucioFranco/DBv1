@@ -6,7 +6,7 @@ use std::io::{Write, Read, Seek};
 /// of the table
 pub struct Rows<B: Write + Read + Seek> {
     buf: B,
-    // TODO:add column_size, header_offset 
+    // TODO:add column_size, header_offset
 }
 
 // TODO: implement insert_row and select_row
