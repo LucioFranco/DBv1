@@ -15,4 +15,9 @@ impl Identifier {
     pub fn get_name(&self) -> String {
         self.name.clone()
     }
+
+    fn check_string(val: String) -> bool {
+        // TODO: Implement check_string for Identifier
+        true
+    }
 }
