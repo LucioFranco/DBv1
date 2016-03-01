@@ -5,6 +5,7 @@ extern crate log;
 
 mod logger;
 mod storage;
+mod identifier;
 
 use log::LogLevelFilter;
 use storage::database::*;
@@ -19,4 +20,8 @@ fn main() {
     let db = Database::create("test_db", DatabaseConfig::from("/tmp".to_string())).unwrap();
     Table::create("user", 0, Vec::<Column>::new(), &db).unwrap();
 
+}
+
+pub enum Error {
+    NotValidIdentifier
 }
