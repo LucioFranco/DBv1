@@ -11,7 +11,7 @@ impl Builder {
 
     pub fn enable(&self) {
         set_logger(|max_log_level| {
-            max_log_level.set(LogLevelFilter::Info);
+            max_log_level.set(self.lvl);
             Box::new(Logger)
         }).unwrap();
     }
