@@ -9,9 +9,11 @@ use super::database::Database;
 use super::column::Column;
 use super::rows::Rows;
 
+use super::super::identifier::Identifier;
+
 pub struct Table<'a> {
     database: &'a Database,
-    name: String,
+    name: Identifier,
     meta_data: TableMetadata
 }
 
@@ -27,6 +29,8 @@ impl<'a> Table<'a> {
     pub fn create<'b>(name: &str, engine_id: u8, columns: Vec<Column>, db: &'b Database) -> Result<Table<'b>, Error> {
         info!("creating table: {}", name);
 
+        // TODO: verify if name is a valid identifier
+
         let metadata = TableMetadata {
             engine_id: engine_id,
             columns: columns
@@ -38,7 +42,7 @@ impl<'a> Table<'a> {
 
         Ok(Table {
             database: &db,
-            name: name.to_string(),
+            name: Identifier::from(name),
             meta_data: metadata.clone()
         })
     }
@@ -58,7 +62,7 @@ impl<'a> Table<'a> {
 
             Ok(Table {
                 database: db,
-                name: name.to_string(),
+                name: Identifier::from(name),
                 meta_data: metadata
             })
         }else {
@@ -79,7 +83,7 @@ impl<'a> Table<'a> {
 
     /// Get full file path including filename and ext
     pub fn get_path(&self) -> PathBuf {
-        self.database.get_path().clone().join(&self.name).with_extension("tbl")
+        self.database.get_path().clone().join(&self.name.get_name()).with_extension("tbl")
     }
 
     pub fn get_engine_id(&self) -> u8 {

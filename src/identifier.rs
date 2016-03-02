@@ -21,3 +21,9 @@ impl Identifier {
         true
     }
 }
+
+impl<'a> From<&'a str> for Identifier {
+    fn from(val: &'a str) -> Self {
+        Identifier { name: val.to_string() }
+    }
+}
