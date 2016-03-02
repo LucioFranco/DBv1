@@ -22,6 +22,7 @@ fn main() {
 
 }
 
+#[derive(Debug)]
 pub enum Error {
     NotValidIdentifier
 }

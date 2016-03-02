@@ -1,6 +1,7 @@
 use super::Error;
 
 // TODO: Implement Identifier
+#[derive(Debug, Clone)]
 pub struct Identifier {
     name: String,
 }
@@ -19,11 +20,5 @@ impl Identifier {
     fn check_string(val: String) -> bool {
         // TODO: Implement check_string for Identifier
         true
-    }
-}
-
-impl<'a> From<&'a str> for Identifier {
-    fn from(val: &'a str) -> Self {
-        Identifier { name: val.to_string() }
     }
 }

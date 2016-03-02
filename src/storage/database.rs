@@ -2,16 +2,18 @@ use std::path::{Path, PathBuf};
 use std::fs::{DirBuilder, metadata};
 use super::Error;
 
+use super::super::identifier::Identifier;
+
 #[derive(Clone)]
 pub struct Database {
-    name: String,
+    name: Identifier,
     config: DatabaseConfig
 }
 
 impl Database {
     pub fn create(name: &str, config: DatabaseConfig) -> Result<Database, Error> {
         info!("created new database: {}", &name);
-        let d = Database { name: name.to_string(), config: config.clone() };
+        let d = Database { name: try!(Identifier::new(name)), config: config.clone() };
 
         DirBuilder::new()
             .recursive(true)
@@ -23,7 +25,7 @@ impl Database {
     pub fn load(name: &str, config: DatabaseConfig) -> Result<Database, Error>{
         if try!(metadata(Path::new(&config.path).join(name))).is_dir() {
             info!("loaded database: {}", name.to_string());
-            Ok(Database { name: name.to_string(), config:  config })
+            Ok(Database { name: try!(Identifier::new(name)), config:  config })
         } else {
             error!("could not load database: {} at {}", name, &config.path);
             Err(Error::LoadDatabase)
@@ -31,11 +33,11 @@ impl Database {
     }
 
     pub fn get_name(&self) -> String {
-        self.name.clone()
+        self.name.get_name()
     }
 
     pub fn get_path(&self) -> PathBuf {
-        Path::new(&self.config.path.clone()).join(&self.name)
+        Path::new(&self.config.path.clone()).join(&self.name.get_name())
     }
 }
 

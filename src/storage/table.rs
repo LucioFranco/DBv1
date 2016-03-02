@@ -42,7 +42,7 @@ impl<'a> Table<'a> {
 
         Ok(Table {
             database: &db,
-            name: Identifier::from(name),
+            name: try!(Identifier::new(name)),
             meta_data: metadata.clone()
         })
     }
@@ -62,7 +62,7 @@ impl<'a> Table<'a> {
 
             Ok(Table {
                 database: db,
-                name: Identifier::from(name),
+                name: try!(Identifier::new(name)),
                 meta_data: metadata
             })
         }else {
