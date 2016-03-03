@@ -12,7 +12,6 @@ pub struct Rows<B: Write + Read + Seek> {
     columns_offset: u32,
 }
 
-// TODO: implement insert_row and select_row
 impl<B: Write + Read + Seek> Rows<B> {
     pub fn new(buf: B, table_header_offset: u32, columns_offset: u32) -> Self {
         Rows {
@@ -22,7 +21,7 @@ impl<B: Write + Read + Seek> Rows<B> {
         }
     }
 
-    pub fn insert_row(&mut self, data: &[u8]) -> Result<usize, Error> {
+    pub fn insert_data(&mut self, data: &[u8]) -> Result<usize, Error> {
         info!("inserting row");
         try!(self.buf.seek(SeekFrom::End(0)));
         self.write_bytes(data)
@@ -34,4 +33,7 @@ impl<B: Write + Read + Seek> Rows<B> {
             Err(e) => Err(Error::Io(e))
         }
     }
+
+    // TODO: write select_data function
 }
+
