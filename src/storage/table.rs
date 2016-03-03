@@ -138,4 +138,22 @@ mod test {
         assert_eq!(table.get_engine_id(), table2.get_engine_id());
         assert_eq!(&table.meta_data.columns, &table2.meta_data.columns);
     }
+
+    #[test]
+    fn table_offset() {
+        let path = "/tmp/test1/";
+        let name = "test_db5";
+
+
+        let mut columns = Vec::<Column>::new();
+        columns.push(Column::new("Name", Types::Char(10)));
+        columns.push(Column::new("Age", Types::Int));
+ 
+        let db = Database::create(&name, DatabaseConfig::new(&path)).unwrap();
+        let table = Table::create("test_table1", 34, columns, &db).unwrap();
+
+        assert_eq!(table.get_table_header_offset(), 42u64);
+
+    }
+
 }
