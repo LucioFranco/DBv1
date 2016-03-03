@@ -25,12 +25,14 @@ case $TARGET in
     ;;
   *)
     cargo build --target $TARGET --verbose
-    cargo run --target $TARGET
+
     cargo test --target $TARGET
     ;;
 esac
 
-cargo build --target $TARGET --release
+# Dont need this because we are not deploying
+# cargo build --target $TARGET --release
 
+# Again we dont need this because we are not deploying
 # sanity check the file type
-file target/$TARGET/release/hello
+# file target/$TARGET/release/hello
