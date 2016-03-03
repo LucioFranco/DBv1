@@ -15,9 +15,9 @@ impl Database {
         info!("created new database: {}", &name);
         let d = Database { name: try!(Identifier::new(name)), config: config.clone() };
 
-        DirBuilder::new()
+        try!(DirBuilder::new()
             .recursive(true)
-            .create(Path::new(&config.path).join(name)).unwrap();
+            .create(Path::new(&config.path).join(name)));
 
         Ok(d)
     }
