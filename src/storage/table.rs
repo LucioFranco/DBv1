@@ -2,7 +2,7 @@ use std::fs::{File, OpenOptions, metadata};
 use std::path::{Path, PathBuf};
 
 use bincode::SizeLimit;
-use bincode::rustc_serialize::{encode_into, decode_from};
+use bincode::rustc_serialize::{encode, encode_into, decode_from};
 
 use super::Error;
 use super::database::Database;
@@ -79,6 +79,11 @@ impl<'a> Table<'a> {
         }
 
         column_sizes
+    }
+
+    pub fn get_table_header_offset(&self) -> u64 {
+        let bytes: Vec<u8> = encode(&self.meta_data, SizeLimit::Infinite).unwrap();
+        bytes.len() as u64
     }
 
     /// Get full file path including filename and ext
