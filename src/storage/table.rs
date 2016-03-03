@@ -165,7 +165,7 @@ mod test {
         let db = Database::create(&name, DatabaseConfig::new(&path)).unwrap();
         let table = Table::create("test_table1", 34, columns, &db).unwrap();
 
-        assert_eq!(table.get_table_header_offset(), 42u64);
+        assert_eq!(table.get_table_header_offset(), 42u32);
 
     }
 
