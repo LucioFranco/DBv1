@@ -71,6 +71,7 @@ impl<'a> Table<'a> {
         }
     }
 
+    /// Returns a vector of the sizes of the columns
     pub fn get_cols_sizes(&self) -> Vec<u32> {
         let mut column_sizes = Vec::<u32>::new();
 
@@ -81,9 +82,19 @@ impl<'a> Table<'a> {
         column_sizes
     }
 
-    pub fn get_table_header_offset(&self) -> u64 {
+    pub fn get_table_header_offset(&self) -> u32 {
         let bytes: Vec<u8> = encode(&self.meta_data, SizeLimit::Infinite).unwrap();
-        bytes.len() as u64
+        bytes.len() as u32 
+    }
+
+    pub fn get_cols_offset(&self) -> u32 {
+        let mut size = 0;
+
+        for v in &self.meta_data.columns {
+            size += v.size();
+        }
+
+        size
     }
 
     /// Get full file path including filename and ext
