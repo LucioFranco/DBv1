@@ -144,13 +144,13 @@ mod test {
         let db2 = Database::create(&name, DatabaseConfig::new(&path));
         assert!(db2.is_ok());
         let db = db2.unwrap();
-        let table2 = Table::create("test_table2", 34, columns, &db);
+        let table3 = Table::create("test_table2", 34, columns, &db);
         assert!(table2.is_ok());
-        let table = table2.unwrap();
+        let table = table3.unwrap();
 
        // assert!(!metadata("/tmp/test1/test_db3/test_table2.tbl").unwrap().is_dir());
 
-        let table2 = Table::load("test_table1", &db).unwrap();
+        let table2 = Table::load("test_table2", &db).unwrap();
 
         assert_eq!(table.get_engine_id(), table2.get_engine_id());
         assert_eq!(&table.meta_data.columns, &table2.meta_data.columns);
