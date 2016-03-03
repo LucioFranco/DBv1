@@ -7,14 +7,18 @@ use std::io::{Write, Read, Seek, SeekFrom};
 /// of the table
 pub struct Rows<B: Write + Read + Seek> {
     buf: B,
-    // TODO:add column_size, header_offset
+    
+    table_header_offset: u32,
+    columns_offset: u32,
 }
 
 // TODO: implement insert_row and select_row
 impl<B: Write + Read + Seek> Rows<B> {
-    pub fn new(buf: B) -> Self {
+    pub fn new(buf: B, table_header_offset: u32, columns_offset: u32) -> Self {
         Rows {
-            buf: buf
+            buf: buf,
+            table_header_offset: table_header_offset,
+            columns_offset: columns_offset
         }
     }
 
