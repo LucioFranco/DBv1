@@ -54,8 +54,8 @@ impl<'a> Table<'a> {
         if !try!(metadata(&path)).is_dir()
         {
             let mut file = try!(OpenOptions::new()
-                        .read(true)
-                        .open(&path));
+                                .read(true)
+                                .open(&path));
 
             let metadata: TableMetadata = try!(decode_from(&mut file, SizeLimit::Infinite));
             info!("loaded table: {}", &name);
@@ -145,7 +145,7 @@ mod test {
         assert!(db2.is_ok());
         let db = db2.unwrap();
         let table3 = Table::create("test_table2", 34, columns, &db);
-        assert!(table2.is_ok());
+        assert!(table3.is_ok());
         let table = table3.unwrap();
 
        // assert!(!metadata("/tmp/test1/test_db3/test_table2.tbl").unwrap().is_dir());
