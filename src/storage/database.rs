@@ -32,6 +32,8 @@ impl Database {
         }
     }
 
+    // TODO: write database delete static function
+
     pub fn get_name(&self) -> String {
         self.name.get_name()
     }

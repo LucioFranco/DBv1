@@ -71,6 +71,8 @@ impl<'a> Table<'a> {
         }
     }
 
+    // TODO: write table delete static function
+
     /// Returns a vector of the sizes of the columns
     pub fn get_cols_sizes(&self) -> Vec<u32> {
         let mut column_sizes = Vec::<u32>::new();
