@@ -36,7 +36,13 @@ impl<'a> Table<'a> {
             columns: columns
         };
 
-        let mut buf = try!(File::create(db.get_path().clone().join(&name).with_extension("tbl")));
+        let path = db.get_path().clone().join(&name).with_extension("tbl");
+        println!("{}", &path.to_str().unwrap());
+        let mut buf = try!(OpenOptions::new()
+                           .read(true)
+                           .write(true)
+                           .create(true)
+                           .open(path));
 
         encode_into(&metadata, &mut buf, SizeLimit::Infinite).unwrap();
 
@@ -172,5 +178,4 @@ mod test {
         assert_eq!(table.get_table_header_offset(), 42u32);
 
     }
-
 }
