@@ -79,7 +79,7 @@ mod test {
 
     #[test]
     fn load_db() {
-        let path = "/tmp/test1/";
+        let path = "/tmp/test2/";
         let name = "test_db2";
         let db = Database::create(&name, DatabaseConfig::new(&path)).unwrap();
 
