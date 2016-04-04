@@ -9,8 +9,8 @@ pub mod column;
 pub mod types;
 
 use std::io;
-use super::{Error as SuperError};
-use bincode::rustc_serialize::{DecodingError};
+use super::Error as SuperError;
+use bincode::rustc_serialize::DecodingError;
 
 #[derive(Debug)]
 pub enum Error {
@@ -18,7 +18,7 @@ pub enum Error {
     BinDe(DecodingError),
     Identifier(SuperError),
     LoadDatabase,
-    LoadTable
+    LoadTable,
 }
 
 impl From<io::Error> for Error {
@@ -35,7 +35,6 @@ impl From<DecodingError> for Error {
 
 impl From<SuperError> for Error {
     fn from(err: super::Error) -> Self {
-        Error::Identifier(err) 
+        Error::Identifier(err)
     }
 }
-

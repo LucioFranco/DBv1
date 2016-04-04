@@ -1,7 +1,7 @@
 use log::{LogRecord, LogLevel, LogLevelFilter, LogMetadata, set_logger, Log};
 
 pub struct Builder {
-    lvl: LogLevelFilter
+    lvl: LogLevelFilter,
 }
 
 impl Builder {
@@ -13,7 +13,8 @@ impl Builder {
         set_logger(|max_log_level| {
             max_log_level.set(self.lvl);
             Box::new(Logger)
-        }).unwrap();
+        })
+            .unwrap();
     }
 }
 

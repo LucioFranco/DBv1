@@ -14,42 +14,46 @@ use super::super::identifier::Identifier;
 pub struct Table<'a> {
     database: &'a Database,
     name: Identifier,
-    meta_data: TableMetadata
+    meta_data: TableMetadata,
 }
 
 #[derive(Clone, RustcDecodable, RustcEncodable)]
 struct TableMetadata {
     engine_id: u8,
-    columns: Vec<Column>
+    columns: Vec<Column>,
 }
 
 /// Table representation
 impl<'a> Table<'a> {
     /// Create table in database
-    pub fn create<'b>(name: &str, engine_id: u8, columns: Vec<Column>, db: &'b Database) -> Result<Table<'b>, Error> {
+    pub fn create<'b>(name: &str,
+                      engine_id: u8,
+                      columns: Vec<Column>,
+                      db: &'b Database)
+                      -> Result<Table<'b>, Error> {
         info!("creating table: {}", name);
 
         // TODO: verify if name is a valid identifier
 
         let metadata = TableMetadata {
             engine_id: engine_id,
-            columns: columns
+            columns: columns,
         };
 
         let path = db.get_path().clone().join(&name).with_extension("tbl");
         println!("{}", &path.to_str().unwrap());
         let mut buf = try!(OpenOptions::new()
-                           .read(true)
-                           .write(true)
-                           .create(true)
-                           .open(path));
+                               .read(true)
+                               .write(true)
+                               .create(true)
+                               .open(path));
 
         encode_into(&metadata, &mut buf, SizeLimit::Infinite).unwrap();
 
         Ok(Table {
             database: &db,
             name: try!(Identifier::new(name)),
-            meta_data: metadata.clone()
+            meta_data: metadata.clone(),
         })
     }
 
@@ -57,11 +61,10 @@ impl<'a> Table<'a> {
     pub fn load<'b>(name: &str, db: &'b Database) -> Result<Table<'b>, Error> {
         info!("loading table: {}", &name);
         let path = db.get_path().clone().join(&name).with_extension("tbl");
-        if !try!(metadata(&path)).is_dir()
-        {
+        if !try!(metadata(&path)).is_dir() {
             let mut file = try!(OpenOptions::new()
-                                .read(true)
-                                .open(&path));
+                                    .read(true)
+                                    .open(&path));
 
             let metadata: TableMetadata = try!(decode_from(&mut file, SizeLimit::Infinite));
             info!("loaded table: {}", &name);
@@ -69,10 +72,12 @@ impl<'a> Table<'a> {
             Ok(Table {
                 database: db,
                 name: try!(Identifier::new(name)),
-                meta_data: metadata
+                meta_data: metadata,
             })
-        }else {
-            error!("could not load table: {} at {}", &name, &path.to_str().unwrap());
+        } else {
+            error!("could not load table: {} at {}",
+                   &name,
+                   &path.to_str().unwrap());
             Err(Error::LoadTable)
         }
     }
@@ -92,7 +97,7 @@ impl<'a> Table<'a> {
 
     pub fn get_table_header_offset(&self) -> u32 {
         let bytes: Vec<u8> = encode(&self.meta_data, SizeLimit::Infinite).unwrap();
-        bytes.len() as u32 
+        bytes.len() as u32
     }
 
     pub fn get_cols_offset(&self) -> u32 {
@@ -113,7 +118,6 @@ impl<'a> Table<'a> {
     pub fn get_engine_id(&self) -> u8 {
         self.meta_data.engine_id
     }
-
 }
 
 #[cfg(test)]
@@ -154,7 +158,7 @@ mod test {
         assert!(table3.is_ok());
         let table = table3.unwrap();
 
-       // assert!(!metadata("/tmp/test1/test_db3/test_table2.tbl").unwrap().is_dir());
+        // assert!(!metadata("/tmp/test1/test_db3/test_table2.tbl").unwrap().is_dir());
 
         let table2 = Table::load("test_table2", &db).unwrap();
 
@@ -171,7 +175,7 @@ mod test {
         let mut columns = Vec::<Column>::new();
         columns.push(Column::new("Name", Types::Char(10)));
         columns.push(Column::new("Age", Types::Int));
- 
+
         let db = Database::create(&name, DatabaseConfig::new(&path)).unwrap();
         let table = Table::create("test_table1", 34, columns, &db).unwrap();
 

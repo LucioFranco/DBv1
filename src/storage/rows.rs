@@ -7,7 +7,7 @@ use std::io::{Write, Read, Seek, SeekFrom};
 /// of the table
 pub struct Rows<B: Write + Read + Seek> {
     buf: B,
-    
+
     table_header_offset: u32,
     columns_offset: u32,
 }
@@ -17,7 +17,7 @@ impl<B: Write + Read + Seek> Rows<B> {
         Rows {
             buf: buf,
             table_header_offset: table_header_offset,
-            columns_offset: columns_offset
+            columns_offset: columns_offset,
         }
     }
 
@@ -30,10 +30,9 @@ impl<B: Write + Read + Seek> Rows<B> {
     fn write_bytes(&mut self, data: &[u8]) -> Result<usize, Error> {
         match self.buf.write_all(data) {
             Ok(_) => Ok(data.len()),
-            Err(e) => Err(Error::Io(e))
+            Err(e) => Err(Error::Io(e)),
         }
     }
 
     // TODO: write select_data function
 }
-

@@ -7,25 +7,31 @@ use super::super::identifier::Identifier;
 #[derive(Clone)]
 pub struct Database {
     name: Identifier,
-    config: DatabaseConfig
+    config: DatabaseConfig,
 }
 
 impl Database {
     pub fn create(name: &str, config: DatabaseConfig) -> Result<Database, Error> {
         info!("created new database: {}", &name);
-        let d = Database { name: try!(Identifier::new(name)), config: config.clone() };
+        let d = Database {
+            name: try!(Identifier::new(name)),
+            config: config.clone(),
+        };
 
         try!(DirBuilder::new()
-            .recursive(true)
-            .create(Path::new(&config.path).join(name)));
+                 .recursive(true)
+                 .create(Path::new(&config.path).join(name)));
 
         Ok(d)
     }
 
-    pub fn load(name: &str, config: DatabaseConfig) -> Result<Database, Error>{
+    pub fn load(name: &str, config: DatabaseConfig) -> Result<Database, Error> {
         if try!(metadata(Path::new(&config.path).join(name))).is_dir() {
             info!("loaded database: {}", name.to_string());
-            Ok(Database { name: try!(Identifier::new(name)), config:  config })
+            Ok(Database {
+                name: try!(Identifier::new(name)),
+                config: config,
+            })
         } else {
             error!("could not load database: {} at {}", name, &config.path);
             Err(Error::LoadDatabase)
@@ -45,7 +51,7 @@ impl Database {
 
 #[derive(Clone)]
 pub struct DatabaseConfig {
-    path: String
+    path: String,
 }
 
 impl DatabaseConfig {

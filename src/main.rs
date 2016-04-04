@@ -3,9 +3,10 @@ extern crate rustc_serialize;
 #[macro_use]
 extern crate log;
 
-mod logger;
-mod storage;
-mod identifier;
+pub mod logger;
+pub mod storage;
+pub mod identifier;
+pub mod parse;
 
 use log::LogLevelFilter;
 use storage::database::*;
@@ -24,5 +25,5 @@ fn main() {
 
 #[derive(Debug)]
 pub enum Error {
-    NotValidIdentifier
+    NotValidIdentifier,
 }
