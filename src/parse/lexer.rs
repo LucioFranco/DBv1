@@ -292,6 +292,28 @@ mod test {
     use super::Lexer;
     use super::super::token::*;
 
+    #[test]
+    fn lexer_simple() {
+        compare_lex("select", &[Token::Word("select".to_owned())]);
+    }
+
+    #[test]
+    fn lexer_medium() {
+        let cmds = &[Token::Word("select".to_owned()), Token::Word("from".to_owned())];
+
+        compare_lex("select from", cmds);
+    }
+
+    #[test]
+    fn lexer_hard() {
+        let cmds = &[Token::Word("select".to_owned()),
+                     Token::Star,
+                     Token::Word("from".to_owned()),
+                     Token::Semi];
+        compare_lex("select * from;", cmds);
+
+    }
+
     fn compare_lex(q: &str, cmds: &[Token]) {
         let mut lex = Lexer::from_query(q);
         let mut index = 0;
@@ -307,34 +329,5 @@ mod test {
             assert_eq!(val.token, cmds[index]);
             index += 1;
         }
-    }
-
-    #[test]
-    fn lexer_simple() {
-        let mut lex = Lexer::from_query("select");
-        let val = lex.next_real().unwrap().unwrap().token;
-
-        assert_eq!(val, Token::Word("select".to_owned()));
-    }
-
-    #[test]
-    fn lexer_medium() {
-        let mut lex = Lexer::from_query("select from");
-
-        let val = lex.next_real().unwrap().unwrap();
-        assert_eq!(format!("{:?}", val.token), "Word(\"select\")");
-
-        let val = lex.next_real().unwrap().unwrap();
-        assert_eq!(format!("{:?}", val.token), "Word(\"from\")");
-    }
-
-    #[test]
-    fn lexer_hard() {
-        let cmds = &[Token::Word("select".to_owned()),
-                     Token::Star,
-                     Token::Word("from".to_owned()),
-                     Token::Semi];
-        compare_lex("select * from;", cmds);
-
     }
 }
