@@ -7,6 +7,7 @@ pub mod logger;
 pub mod storage;
 pub mod identifier;
 pub mod parse;
+pub mod error;
 
 use log::LogLevelFilter;
 use storage::database::*;
@@ -21,9 +22,4 @@ fn main() {
     let db = Database::create("test_db", DatabaseConfig::from("/tmp".to_string())).unwrap();
     Table::create("user", 0, Vec::<Column>::new(), &db).unwrap();
 
-}
-
-#[derive(Debug)]
-pub enum Error {
-    NotValidIdentifier,
 }

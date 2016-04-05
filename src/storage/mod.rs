@@ -9,7 +9,7 @@ pub mod column;
 pub mod types;
 
 use std::io;
-use super::Error as SuperError;
+use super::error::Error as SuperError;
 use bincode::rustc_serialize::DecodingError;
 
 #[derive(Debug)]
@@ -34,7 +34,7 @@ impl From<DecodingError> for Error {
 }
 
 impl From<SuperError> for Error {
-    fn from(err: super::Error) -> Self {
+    fn from(err: SuperError) -> Self {
         Error::Identifier(err)
     }
 }
