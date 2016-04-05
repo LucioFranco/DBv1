@@ -3,9 +3,8 @@ sudo: false
 language: rust
 
 # NOTE This configuration has only be tested on the stable channel
-rust:
-  - stable
-  - beta
+rust: stable
+ 
 
 os:
   - linux
