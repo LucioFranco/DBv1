@@ -1,7 +1,7 @@
 use std::mem::swap;
 use super::lexer::{Lexer, LexError};
 use super::token::{TokenSpan, Token, Lit};
-use super::exec::Query;
+use super::exec::*; // TODO: remove * import
 
 pub struct Parser<'a> {
     lexer: Lexer<'a>,
@@ -54,23 +54,35 @@ impl<'a> Parser<'a> {
     }
 
     fn run_major_command(&mut self, cmd: String) {
-        match &*cmd {
-            "select" => self.parse_select(),
+        match Keyword::from_str(&*cmd) {
+            Keyword::Select => self.parse_select(),
             _ => panic!("not select"),
         };
     }
 
     fn parse_select(&mut self) -> Query {
-        Query::SelectStmt
+        Query::TableStmt(TableStmt::SelectStmt)
     }
 }
 
+#[derive(Debug)]
 pub enum Keyword {
     // Major
     Select,
 
     // Minor
     From,
+}
+
+impl Keyword {
+    pub fn from_str(k: &str) -> Keyword {
+        match &*k.to_lowercase() {
+            "select" => Keyword::Select,
+            "from" => Keyword::From,
+            keyword => panic!("unexpected keyword {}", keyword),
+        }
+
+    }
 }
 
 #[derive(Debug)]
