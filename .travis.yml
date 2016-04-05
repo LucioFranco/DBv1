@@ -3,7 +3,9 @@ sudo: false
 language: rust
 
 # NOTE This configuration has only be tested on the stable channel
-rust: stable
+rust:
+  - stable
+  - beta
 
 os:
   - linux
@@ -13,7 +15,7 @@ env:
   global:
     # This will be part of the release tarball
     # TODO change the project name
-    - PROJECT_NAME=rust-everywhere
+    - PROJECT_NAME=rust-db
 
 matrix:
   # Clear the whole matrix
