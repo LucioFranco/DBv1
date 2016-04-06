@@ -16,7 +16,7 @@ pub enum DbStmt {
 
 #[derive(Debug, Clone)]
 pub struct SelectStmt {
-    pub cols: Vector<Col>,
+    pub cols: Vec<Col>,
     pub table: Table, // TODO: add support for multipule tables
 }
 

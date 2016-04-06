@@ -64,7 +64,7 @@ impl<'a> Parser<'a> {
         Query::TableStmt(TableStmt::Select(SelectStmt {
             cols: vec![Col { name: "id".to_owned() }],
             table: Table {
-                name: "user_v1",
+                name: "user_v1".to_owned(),
                 alias: None,
             },
         }))
