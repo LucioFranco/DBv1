@@ -1,12 +1,15 @@
+use std::collections::HashMap;
+
 #[derive(Debug, Clone)]
 pub enum Query {
-    DbStmt(DbStmt),
-    TableStmt(TableStmt),
+    Database(DbStmt),
+    Table(TableStmt),
 }
 
 #[derive(Debug, Clone)]
 pub enum TableStmt {
     Select(SelectStmt),
+    Insert(InsertStmt),
 }
 
 #[derive(Debug, Clone)]
@@ -15,12 +18,18 @@ pub enum DbStmt {
 }
 
 #[derive(Debug, Clone)]
+pub struct InsertStmt {
+    pub table: Table,
+    pub cols: HashMap<Col, Box<[u8]>>,
+}
+
+#[derive(Debug, Clone)]
 pub struct SelectStmt {
     pub cols: Vec<Col>,
     pub table: Table, // TODO: add support for multipule tables
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct Col {
     pub name: String,
 }
