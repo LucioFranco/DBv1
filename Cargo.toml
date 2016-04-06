@@ -4,8 +4,12 @@ version = "0.1.0"
 authors = ["Lucio Franco <lucio.franco@du.edu>"]
 
 [[bin]]
-name = "rust_db"
+name = "db-server"
 path = "src/main.rs"
+
+[[bin]]
+name="db-cli"
+path = "cli/src/main.rs"
 
 [dependencies]
 log = "*"

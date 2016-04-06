@@ -61,7 +61,13 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_select(&mut self) -> Query {
-        Query::TableStmt(TableStmt::SelectStmt)
+        Query::TableStmt(TableStmt::Select(SelectStmt {
+            cols: vec![Col { name: "id".to_owned() }],
+            table: Table {
+                name: "user_v1",
+                alias: None,
+            },
+        }))
     }
 }
 
