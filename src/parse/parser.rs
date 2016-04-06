@@ -16,20 +16,19 @@ pub struct Parser<'a> {
 impl<'a> Parser<'a> {
     pub fn from_query(q: &'a str) -> Parser<'a> {
         let lex = Lexer::from_query(q);
-        let mut p = Parser {
+        Parser {
             lexer: lex,
             curr: None,
             last: None,
             peek: None,
-        };
-
-        // TODO: fix this
-        p.bump().unwrap();
-        p.bump().unwrap();
-        p
+        }
     }
 
     pub fn parse(&mut self) -> Result<(), ParserError> {
+        // TODO: handle this with a better error message
+        try!(self.bump());
+        try!(self.bump());
+
         try!(self.parse_commands());
         Ok(())
     }
