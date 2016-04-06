@@ -24,13 +24,12 @@ impl<'a> Parser<'a> {
         }
     }
 
-    pub fn parse(&mut self) -> Result<(), ParserError> {
+    pub fn parse(&mut self) -> Result<Query, ParserError> {
         // TODO: handle this with a better error message
         try!(self.bump());
         try!(self.bump());
 
-        try!(self.parse_commands());
-        Ok(())
+        self.parse_commands()
     }
 
     fn bump(&mut self) -> Result<(), ParserError> {
@@ -43,27 +42,23 @@ impl<'a> Parser<'a> {
 
     // SQL Commands
 
-    fn parse_commands(&mut self) -> Result<(), ParserError> {
+    fn parse_commands(&mut self) -> Result<Query, ParserError> {
         let curr = self.curr.clone();
 
         // Parse first word that
         match curr.unwrap().token {
-            Token::Word(val) => try!(self.run_major_command(val)),
-            _ => return Err(ParserError::FirstCmdNotWord),
+            Token::Word(val) => self.run_major_command(val),
+            _ => Err(ParserError::FirstCmdNotWord),
         }
-
-        Ok(())
     }
 
-    fn run_major_command(&mut self, cmd: String) -> Result<(), ParserError> {
+    fn run_major_command(&mut self, cmd: String) -> Result<Query, ParserError> {
         match Keyword::from_str(&*cmd) {
-            Keyword::Select => self.parse_select(),
-            Keyword::Insert => self.parse_insert(),
+            Keyword::Select => Ok(self.parse_select()),
+            Keyword::Insert => Ok(self.parse_insert()),
 
-            _ => return Err(ParserError::FirstCmdNotMajor),
-        };
-
-        Ok(())
+            _ => Err(ParserError::FirstCmdNotMajor),
+        }
     }
 
     fn parse_select(&mut self) -> Query {
@@ -124,5 +119,16 @@ pub enum ParserError {
 impl From<LexError> for ParserError {
     fn from(e: LexError) -> ParserError {
         ParserError::LexerError(e)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn basic() {
+        let mut p = Parser::from_query("select");
+        p.parse().unwrap();
     }
 }
