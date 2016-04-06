@@ -127,7 +127,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn basic() {
+    fn select() {
         let mut p = Parser::from_query("select");
         p.parse().unwrap();
     }
