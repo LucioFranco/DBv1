@@ -94,6 +94,7 @@ pub enum Keyword {
 
     // Minor
     From,
+    Into,
 }
 
 impl Keyword {

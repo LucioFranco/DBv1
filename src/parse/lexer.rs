@@ -311,7 +311,22 @@ mod test {
                      Token::Word("from".to_owned()),
                      Token::Semi];
         compare_lex("select * from;", cmds);
+    }
 
+    #[test]
+    fn lexer_lit() {
+        let cmds = &[Token::Word("insert".to_owned()), Token::Literal(Lit::Int(43)), Token::Semi];
+        compare_lex("insert 43;", cmds);
+
+        let cmds = &[Token::Word("insert".to_owned()),
+                     Token::Literal(Lit::Float(43.32)),
+                     Token::Semi];
+        compare_lex("insert 43.32;", cmds);
+
+        let cmds = &[Token::Word("insert".to_owned()),
+                     Token::Literal(Lit::String("true".to_owned())),
+                     Token::Semi];
+        compare_lex("insert \"true\";", cmds);
     }
 
     fn compare_lex(q: &str, cmds: &[Token]) {
