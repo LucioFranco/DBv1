@@ -17,4 +17,6 @@ impl Types {
             &Types::Char(len) => (len) as u32,
         }
     }
+
+    // TODO: Write encode and decode methods for types
 }
