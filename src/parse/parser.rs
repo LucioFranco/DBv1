@@ -49,19 +49,22 @@ impl<'a> Parser<'a> {
 
         // Parse first word that
         match curr.unwrap().token {
-            Token::Word(val) => self.run_major_command(val),
+            Token::Word(val) => try!(self.run_major_command(val)),
             _ => return Err(ParserError::FirstCmdNotWord),
         }
 
         Ok(())
     }
 
-    fn run_major_command(&mut self, cmd: String) {
+    fn run_major_command(&mut self, cmd: String) -> Result<(), ParserError> {
         match Keyword::from_str(&*cmd) {
             Keyword::Select => self.parse_select(),
             Keyword::Insert => self.parse_insert(),
-            _ => panic!("not select"),
+
+            _ => return Err(ParserError::FirstCmdNotMajor),
         };
+
+        Ok(())
     }
 
     fn parse_select(&mut self) -> Query {
@@ -116,6 +119,7 @@ pub enum ParserError {
     InvalidCommand,
     LexerError(LexError),
     FirstCmdNotWord,
+    FirstCmdNotMajor,
 }
 
 impl From<LexError> for ParserError {
