@@ -3,11 +3,12 @@ extern crate rustc_serialize;
 #[macro_use]
 extern crate log;
 
-pub mod logger;
-pub mod storage;
-pub mod identifier;
-pub mod parse;
-pub mod error;
+mod logger;
+mod storage;
+mod identifier;
+mod parse;
+mod error;
+mod query;
 
 use log::LogLevelFilter;
 use storage::database::*;
@@ -19,7 +20,7 @@ fn main() {
     log.enable();
     info!("Started Database");
 
-    let db = Database::create("test_db", DatabaseConfig::from("/tmp".to_string())).unwrap();
+    let db = Database::create("test_db", DatabaseConfig::from("/tmp".to_owned())).unwrap();
     Table::create("user", 0, Vec::<Column>::new(), &db).unwrap();
 
 }
