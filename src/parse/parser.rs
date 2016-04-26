@@ -53,40 +53,68 @@ impl<'a> Parser<'a> {
     }
 
     fn run_major_command(&mut self, cmd: String) -> Result<Query, ParserError> {
-        match Keyword::from_str(&*cmd) {
-            Keyword::Select => Ok(self.parse_select()),
-            Keyword::Insert => Ok(self.parse_insert()),
+        match Keyword::from_str(&*cmd).unwrap() { // TODO: clean up unwrap
+            Keyword::Select => self.parse_select(),
+            Keyword::Insert => self.parse_insert(),
 
             _ => Err(ParserError::FirstCmdNotMajor),
         }
     }
 
-    fn parse_select(&mut self) -> Query {
+    fn parse_select(&mut self) -> Result<Query, ParserError> {
         // TODO: impl parse_select
 
-        Query::Table(TableStmt::Select(SelectStmt {
+        Ok(Query::Table(TableStmt::Select(SelectStmt {
             cols: vec![Col { name: "id".to_owned() }],
             table: Table {
                 name: "user_v1".to_owned(),
                 alias: None,
             },
-        }))
+        })))
     }
 
-    fn parse_insert(&mut self) -> Query {
+    fn parse_insert(&mut self) -> Result<Query, ParserError> {
         // TODO: impl parse_insert
+        try!(self.expect_keyword(Keyword::Into));
 
-        Query::Table(TableStmt::Insert(InsertStmt {
+
+        Ok(Query::Table(TableStmt::Insert(InsertStmt {
             table: Table {
                 name: "user_v1".to_owned(),
                 alias: None,
             },
             cols: HashMap::new(),
-        }))
+        })))
     }
 }
 
-#[derive(Debug)]
+// Helper function
+impl<'a> Parser<'a> {
+    fn expect_keyword(&mut self, exp: Keyword) -> Result<Keyword, ParserError> {
+        // TODO: clean up unwrap but they should be safe for the moment
+
+        try!(self.bump());
+        let curr = {
+            let token = &self.curr.clone().unwrap();
+
+            match &token.token {
+                &Token::Word(ref word) => word.clone(),
+                t => return Err(ParserError::ExpectedKeyword(exp, format!("{:?}", t))),
+            }
+        };
+
+
+        let actual = try!(Keyword::from_str(&curr));
+
+        if actual == exp {
+            Ok(actual)
+        } else {
+            Err(ParserError::ExpectedKeyword(exp, curr))
+        }
+    }
+}
+
+#[derive(Debug, PartialEq)]
 pub enum Keyword {
     // Major
     Select,
@@ -98,14 +126,19 @@ pub enum Keyword {
 }
 
 impl Keyword {
-    pub fn from_str(k: &str) -> Keyword {
-        match &*k.to_lowercase() {
+    pub fn from_str(k: &str) -> Result<Keyword, ParserError> {
+        let keyword = match &*k.to_lowercase() {
             "select" => Keyword::Select,
             "insert" => Keyword::Insert,
-            "from" => Keyword::From,
-            keyword => panic!("unexpected keyword {}", keyword),
-        }
 
+            "from" => Keyword::From,
+            "into" => Keyword::Into,
+
+            // Keyword not found
+            keyword => return Err(ParserError::UnexpectedKeyword(keyword.to_owned())), // TODO: clean up panic
+        };
+
+        Ok(keyword)
     }
 }
 
@@ -113,8 +146,13 @@ impl Keyword {
 pub enum ParserError {
     InvalidCommand,
     LexerError(LexError),
+
     FirstCmdNotWord,
     FirstCmdNotMajor,
+
+    ExpectedKeyword(Keyword, String),
+
+    UnexpectedKeyword(String),
 }
 
 impl From<LexError> for ParserError {
@@ -132,4 +170,17 @@ mod test {
         let mut p = Parser::from_query("select");
         p.parse().unwrap();
     }
+
+    #[test]
+    fn insert() {
+        let mut p = Parser::from_query("insert into");
+        let q = p.parse().unwrap();
+
+    }
+
+    // #[test]
+    // fn first_non_major() {
+    //     let err = Parser::from_query("alskdfj").parse();
+    //     assert!(err.is_err());
+    // }
 }
