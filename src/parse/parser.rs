@@ -77,7 +77,6 @@ impl<'a> Parser<'a> {
         // TODO: impl parse_insert
         try!(self.expect_keyword(Keyword::Into));
 
-
         Ok(Query::Table(TableStmt::Insert(InsertStmt {
             table: Table {
                 name: "user_v1".to_owned(),

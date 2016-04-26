@@ -156,7 +156,7 @@ impl<'a> Lexer<'a> {
         };
 
         let token = match curr {
-            'a'...'z' | 'A'...'B' => {
+            'a'...'z' | 'A'...'Z' => {
                 let word = self.scan_words();
                 Token::Word(word)
             }
@@ -191,6 +191,11 @@ impl<'a> Lexer<'a> {
             '(' => {
                 self.bump();
                 Token::ParentOP
+            }
+
+            ')' => {
+                self.bump();
+                Token::ParentCL
             }
 
             // Literals
@@ -329,6 +334,20 @@ mod test {
         compare_lex("insert \"true\";", cmds);
     }
 
+    #[test]
+    fn lexer_parent() {
+        let cmds = &[Token::Word("insert".to_owned()),
+                     Token::ParentOP,
+                     Token::Word("bool_string".to_owned()),
+                     Token::ParentCL,
+                     Token::Word("VALUES".to_owned()),
+                     Token::ParentOP,
+                     Token::Literal(Lit::String("true".to_owned())),
+                     Token::ParentCL,
+                     Token::Semi];
+        compare_lex("insert (bool_string) VALUES (\"true\");", cmds);
+    }
+
     fn compare_lex(q: &str, cmds: &[Token]) {
         let mut lex = Lexer::from_query(q);
         let mut index = 0;
@@ -338,7 +357,7 @@ mod test {
                 Some(val) => val,
                 None => break,
             };
-
+            println!("{:?}", val);
 
             // println!("{:?}, {:?}", val.token, cmds[index]);
             assert_eq!(val.token, cmds[index]);
