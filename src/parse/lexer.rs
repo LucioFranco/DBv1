@@ -337,6 +337,7 @@ mod test {
     #[test]
     fn lexer_parent() {
         let cmds = &[Token::Word("insert".to_owned()),
+                     Token::Word("into".to_owned()),
                      Token::ParentOP,
                      Token::Word("bool_string".to_owned()),
                      Token::ParentCL,
@@ -345,7 +346,7 @@ mod test {
                      Token::Literal(Lit::String("true".to_owned())),
                      Token::ParentCL,
                      Token::Semi];
-        compare_lex("insert (bool_string) VALUES (\"true\");", cmds);
+        compare_lex("insert into (bool_string) VALUES (\"true\");", cmds);
     }
 
     fn compare_lex(q: &str, cmds: &[Token]) {
