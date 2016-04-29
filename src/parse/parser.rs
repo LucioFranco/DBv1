@@ -81,8 +81,31 @@ impl<'a> Parser<'a> {
 
         try!(self.expect_token(Token::ParentOP));
 
-        let mut cols = Vec::<Col>::new();
-        cols.push(Col { name: try!(self.expect_word())});
+        let mut cols = Vec::new();
+
+        loop {
+            match self.expect_word() {
+                Ok(ref word) => {
+                    cols.push(word.to_owned());
+                    try!(self.expect_token(Token::Comma));
+                },
+                Err(ParserError::ExpectedToken(_, _)) => {
+                    let curr = self.curr.clone().unwrap().token;
+                    println!("blah {:?}", curr);
+
+                    match curr {
+                        Token::Comma => try!(self.bump()),
+                        Token::ParentCL => {
+                            try!(self.bump());
+                            break;
+                        },
+                        token => return Err(ParserError::ExpectedToken(Token::Comma, format!("{:?}", token))),
+                    }
+                },
+                Err(err) => return Err(err),
+            }
+        }
+
 
         Ok(Query::Table(TableStmt::Insert(InsertStmt {
             table: Table {
@@ -229,9 +252,16 @@ mod test {
 
     }
 
-    // #[test]
-    // fn first_non_major() {
-    //     let err = Parser::from_query("alskdfj").parse();
-    //     assert!(err.is_err());
-    // }
+    #[test]
+    #[should_panic]
+    fn insert_panic() {
+        Parser::from_query("insert into (asdf aslkdfhjahh dsfkjals)").parse().unwrap();
+    }
+
+    #[test]
+    #[should_panic]
+    fn first_non_major() {
+        let err = Parser::from_query("alskdfj").parse();
+        assert!(err.is_err());
+    }
 }
