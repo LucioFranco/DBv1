@@ -77,6 +77,13 @@ impl<'a> Parser<'a> {
         // TODO: impl parse_insert
         try!(self.expect_keyword(Keyword::Into));
 
+        //try!();
+
+        try!(self.expect_token(Token::ParentOP));
+
+        let mut cols = Vec::<Col>::new();
+        cols.push(Col { name: try!(self.expect_word())});
+
         Ok(Query::Table(TableStmt::Insert(InsertStmt {
             table: Table {
                 name: "user_v1".to_owned(),
@@ -109,6 +116,49 @@ impl<'a> Parser<'a> {
             Ok(actual)
         } else {
             Err(ParserError::ExpectedKeyword(exp, curr))
+        }
+    }
+
+    fn expect_token(&mut self, exp: Token)  -> Result<Token, ParserError> {
+        try!(self.bump());
+
+        let token = self.curr.clone().unwrap();
+        let actual = token.token.clone();
+
+        if actual == exp {
+            Ok(actual)
+        } else {
+            Err(ParserError::ExpectedToken(exp, format!("{:?}", actual)))
+        }
+    }
+
+    // expect word case insensitive.
+    fn expect_word(&mut self) -> Result<String, ParserError> {
+        try!(self.bump());
+
+        let token = match self.curr.clone() {
+            Some(t) => t,
+            None => return Err(ParserError::ExpectedTokenButGotNone),
+        };
+        let actual = token.token.clone();
+
+        let word = match actual {
+            Token::Word(ref word) => word.to_lowercase(), // always lowercase
+            t => return Err(ParserError::ExpectedToken(Token::Word(String::new()), format!("{:?}", t))),
+        };
+
+        Ok(word)
+    }
+
+    fn expect_lit(&mut self) -> Result<Lit, ParserError> {
+        try!(self.bump());
+
+        let token = self.curr.clone().unwrap();
+        let actual = token.token.clone();
+
+        match actual {
+            Token::Literal(lit) => Ok(lit),
+            t => Err(ParserError::ExpectedToken(Token::Literal(Lit::String(String::new())), format!("{:?}", t))),
         }
     }
 }
@@ -149,7 +199,9 @@ pub enum ParserError {
     FirstCmdNotWord,
     FirstCmdNotMajor,
 
-    ExpectedKeyword(Keyword, String),
+    ExpectedKeyword(Keyword, String), // exp, actual
+    ExpectedToken(Token, String), // exp, actual
+    ExpectedTokenButGotNone,
 
     UnexpectedKeyword(String),
 }
@@ -172,7 +224,7 @@ mod test {
 
     #[test]
     fn insert() {
-        let mut p = Parser::from_query("insert into");
+        let mut p = Parser::from_query("insert into (name)");
         let q = p.parse().unwrap();
 
     }
