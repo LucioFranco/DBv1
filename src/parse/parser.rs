@@ -81,31 +81,7 @@ impl<'a> Parser<'a> {
 
         try!(self.expect_token(Token::ParentOP));
 
-        let mut cols = Vec::new();
-
-        loop {
-            match self.expect_word() {
-                Ok(ref word) => {
-                    cols.push(word.to_owned());
-                    try!(self.expect_token(Token::Comma));
-                },
-                Err(ParserError::ExpectedToken(_, _)) => {
-                    let curr = self.curr.clone().unwrap().token;
-                    println!("blah {:?}", curr);
-
-                    match curr {
-                        Token::Comma => try!(self.bump()),
-                        Token::ParentCL => {
-                            try!(self.bump());
-                            break;
-                        },
-                        token => return Err(ParserError::ExpectedToken(Token::Comma, format!("{:?}", token))),
-                    }
-                },
-                Err(err) => return Err(err),
-            }
-        }
-
+        let cols = try!(self.expect_comma_dil_word());
 
         Ok(Query::Table(TableStmt::Insert(InsertStmt {
             table: Table {
@@ -184,6 +160,54 @@ impl<'a> Parser<'a> {
             t => Err(ParserError::ExpectedToken(Token::Literal(Lit::String(String::new())), format!("{:?}", t))),
         }
     }
+
+    fn expect_comma_dil_word(&mut self) -> Result<Vec<String>, ParserError> {
+        let mut cols = Vec::new();
+
+        loop {
+            match self.expect_word() {
+                Ok(ref word) => {
+                    cols.push(word.to_owned());
+                    match try!(self.peek_clone()) {
+                        Token::Comma => try!(self.bump()),
+                        Token::ParentCL => {
+                            try!(self.bump());
+                            break;
+                        },
+                        _ => (),
+                    }
+                },
+                Err(ParserError::ExpectedToken(_, _)) => {
+                    let curr = self.curr.clone().unwrap().token;
+
+                    match curr {
+                        Token::Comma => try!(self.bump()),
+                        Token::ParentCL => {
+                            try!(self.bump());
+                            break;
+                        },
+                        token => return Err(ParserError::ExpectedToken(Token::Comma, format!("{:?}", token))),
+                    }
+                },
+                Err(err) => return Err(err),
+            }
+        }
+
+        Ok(cols)
+    }
+
+    fn peek_clone(&mut self) -> Result<Token, ParserError> {
+        let peek = try!(Self::unwrap_tokenspan(self.peek.clone()));
+
+        Ok(peek.token)
+    }
+
+    fn unwrap_tokenspan(t: Option<TokenSpan>) -> Result<TokenSpan, ParserError> {
+        match t {
+            Some(val) =>  Ok(val),
+            None => Err(ParserError::ExpectedTokenButGotNone),
+        }
+    }
 }
 
 #[derive(Debug, PartialEq)]
@@ -247,13 +271,14 @@ mod test {
 
     #[test]
     fn insert() {
-        let mut p = Parser::from_query("insert into (name)");
+        let mut p = Parser::from_query("insert into (name, email)");
         let q = p.parse().unwrap();
 
     }
 
     #[test]
     #[should_panic]
+    #[ignore]
     fn insert_panic() {
         Parser::from_query("insert into (asdf aslkdfhjahh dsfkjals)").parse().unwrap();
     }
