@@ -77,18 +77,35 @@ impl<'a> Parser<'a> {
         // TODO: impl parse_insert
         try!(self.expect_keyword(Keyword::Into));
 
-        //try!();
-
-        try!(self.expect_token(Token::ParentOP));
+        let table = {
+            let name = try!(self.expect_word());
+            Table {
+                name: name,
+                alias: None,
+            }
+        };
 
         let cols = try!(self.expect_comma_dil_word());
 
+        try!(self.expect_keyword(Keyword::Values));
+
+
+        let mut values = try!(self.expect_comma_dil_lit());
+
+        if cols.capacity() != values.capacity() {
+            return Err(ParserError::ColumsDoNotMatchValues);
+        }
+
+        let mut cols_map = HashMap::new();
+        for col in cols {
+            let col = Col { name: col };
+            cols_map.insert(col, values.remove(0));
+        }
+
+        try!(self.expect_token(Token::Semi));
         Ok(Query::Table(TableStmt::Insert(InsertStmt {
-            table: Table {
-                name: "user_v1".to_owned(),
-                alias: None,
-            },
-            cols: HashMap::new(),
+            table: table,
+            cols: cols_map,
         })))
     }
 }
@@ -161,11 +178,37 @@ impl<'a> Parser<'a> {
         }
     }
 
-    fn expect_comma_dil_word(&mut self) -> Result<Vec<String>, ParserError> {
+    fn expect_comma_dil_lit(&mut self) -> Result<Vec<Lit>, ParserError> {
+        try!(self.expect_token(Token::ParentOP));
+
         let mut cols = Vec::new();
 
         loop {
-            println!("{:?}", &self.curr);
+            match self.expect_lit() {
+                Ok(ref lit) => {
+                    cols.push(lit.clone());
+                    match try!(self.peek_clone()) {
+                        Token::Comma => try!(self.bump()),
+                        Token::ParentCL => {
+                            try!(self.bump());
+                            break;
+                        },
+                        token => return Err(ParserError::ExpectedToken(Token::Comma, format!("{:?}", token))),
+                    }
+                },
+                Err(err) => return Err(err),
+            }
+        }
+
+        Ok(cols)
+    }
+
+    fn expect_comma_dil_word(&mut self) -> Result<Vec<String>, ParserError> {
+        try!(self.expect_token(Token::ParentOP));
+
+        let mut cols = Vec::new();
+
+        loop {
             match self.expect_word() {
                 Ok(ref word) => {
                     cols.push(word.to_owned());
@@ -208,6 +251,7 @@ pub enum Keyword {
     // Minor
     From,
     Into,
+    Values,
 }
 
 impl Keyword {
@@ -218,6 +262,7 @@ impl Keyword {
 
             "from" => Keyword::From,
             "into" => Keyword::Into,
+            "values" => Keyword::Values,
 
             // Keyword not found
             keyword => return Err(ParserError::UnexpectedKeyword(keyword.to_owned())), // TODO: clean up panic
@@ -234,6 +279,8 @@ pub enum ParserError {
 
     FirstCmdNotWord,
     FirstCmdNotMajor,
+
+    ColumsDoNotMatchValues,
 
     ExpectedKeyword(Keyword, String), // exp, actual
     ExpectedToken(Token, String), // exp, actual
@@ -260,15 +307,21 @@ mod test {
 
     #[test]
     fn insert() {
-        let mut p = Parser::from_query("insert into (name, email)");
+        let mut p = Parser::from_query("INSERT INTO users (name, email) VALUES (\"first last\", \"first.last@example.com\");");
         let q = p.parse().unwrap();
 
     }
 
     #[test]
     #[should_panic]
-    fn insert_panic() {
+    fn insert_no_table_name() {
         Parser::from_query("insert into (asdf aslkdfhjahh dsfkjals)").parse().unwrap();
+    }
+
+    #[test]
+    #[should_panic]
+    fn insert_non_proper_col_list() {
+        Parser::from_query("insert into users (asdf aslkdfhjahh dsfkjals)").parse().unwrap();
     }
 
     #[test]

@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use super::token;
 
 #[derive(Debug, Clone)]
 pub enum Query {
@@ -20,7 +21,7 @@ pub enum DbStmt {
 #[derive(Debug, Clone)]
 pub struct InsertStmt {
     pub table: Table,
-    pub cols: HashMap<Col, Box<[u8]>>,
+    pub cols: HashMap<Col, token::Lit>,
 }
 
 #[derive(Debug, Clone)]
