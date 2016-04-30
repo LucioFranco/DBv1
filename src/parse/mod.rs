@@ -1,7 +1,7 @@
 pub mod lexer;
 pub mod parser;
 pub mod token;
-pub mod exec;
+pub mod ast;
 
 #[derive(Debug, Clone)]
 pub struct Span {

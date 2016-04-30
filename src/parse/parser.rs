@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use super::lexer::{Lexer, LexError};
 use super::token::{TokenSpan, Token, Lit};
-use super::exec::*; // TODO: remove * import
+use super::ast::*; // TODO: remove * import
 
 pub struct Parser<'a> {
     lexer: Lexer<'a>,
