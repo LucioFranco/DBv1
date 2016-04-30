@@ -178,18 +178,6 @@ impl<'a> Parser<'a> {
                         token => return Err(ParserError::ExpectedToken(Token::Comma, format!("{:?}", token))),
                     }
                 },
-                Err(ParserError::ExpectedToken(_, _)) => {
-                    let curr = self.curr.clone().unwrap().token;
-
-                    match curr {
-                        Token::Comma => try!(self.bump()),
-                        Token::ParentCL => {
-                            try!(self.bump());
-                            break;
-                        },
-                        token => return Err(ParserError::ExpectedToken(Token::Comma, format!("{:?}", token))),
-                    }
-                },
                 Err(err) => return Err(err),
             }
         }
