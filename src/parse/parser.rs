@@ -62,14 +62,39 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_select(&mut self) -> Result<Query, ParserError> {
-        // TODO: impl parse_select
+        let mut cols = Vec::new();
+
+        loop {
+            match self.expect_word() {
+                Ok(ref word) => {
+                    cols.push(Col { name: word.to_owned() });
+                    match try!(self.peek_clone()) {
+                        Token::Comma => try!(self.bump()),
+
+                        Token::Word(_) => break,
+
+                        token => return Err(ParserError::ExpectedToken(Token::Comma, format!("{:?}", token))),
+                    }
+                },
+                Err(err) => return Err(err),
+            }
+        }
+
+        try!(self.expect_keyword(Keyword::From));
+
+        let table = {
+            let name = try!(self.expect_word());
+            Table {
+                name: name,
+                alias: None,
+            }
+        };
+
+        try!(self.expect_token(Token::Semi));
 
         Ok(Query::Table(TableStmt::Select(SelectStmt {
-            cols: vec![Col { name: "id".to_owned() }],
-            table: Table {
-                name: "user_v1".to_owned(),
-                alias: None,
-            },
+            cols: cols,
+            table: table,
         })))
     }
 
@@ -304,7 +329,14 @@ mod test {
 
     #[test]
     fn select() {
-        let mut p = Parser::from_query("select");
+        let mut p = Parser::from_query("select name, email from users;");
+        p.parse().unwrap();
+    }
+
+    #[test]
+    #[should_panic]
+    fn select_panic() {
+        let mut p = Parser::from_query("select name, email users;");
         p.parse().unwrap();
     }
 
