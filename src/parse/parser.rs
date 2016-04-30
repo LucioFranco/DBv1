@@ -165,6 +165,7 @@ impl<'a> Parser<'a> {
         let mut cols = Vec::new();
 
         loop {
+            println!("{:?}", &self.curr);
             match self.expect_word() {
                 Ok(ref word) => {
                     cols.push(word.to_owned());
@@ -174,7 +175,7 @@ impl<'a> Parser<'a> {
                             try!(self.bump());
                             break;
                         },
-                        _ => (),
+                        token => return Err(ParserError::ExpectedToken(Token::Comma, format!("{:?}", token))),
                     }
                 },
                 Err(ParserError::ExpectedToken(_, _)) => {
@@ -278,7 +279,6 @@ mod test {
 
     #[test]
     #[should_panic]
-    #[ignore]
     fn insert_panic() {
         Parser::from_query("insert into (asdf aslkdfhjahh dsfkjals)").parse().unwrap();
     }
