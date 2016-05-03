@@ -3,7 +3,7 @@ use super::token;
 
 #[derive(Debug, Clone)]
 pub enum Query {
-    Database(DbStmt),
+    Database(DatabaseStmt),
     Table(TableStmt),
 }
 
@@ -14,7 +14,7 @@ pub enum TableStmt {
 }
 
 #[derive(Debug, Clone)]
-pub enum DbStmt {
+pub enum DatabaseStmt {
     CreateTable,
 }
 
