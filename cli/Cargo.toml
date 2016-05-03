@@ -4,3 +4,5 @@ version = "0.1.0"
 authors = ["Lucio Franco <lucio.franco@du.edu>"]
 
 [dependencies]
+getopts = "0.2"
+mio = "0.5"
