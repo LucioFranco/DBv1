@@ -1,19 +1,11 @@
-extern crate bincode;
-extern crate rustc_serialize;
-#[macro_use]
-extern crate log;
-
-mod logger;
-mod storage;
-mod identifier;
-mod parse;
-mod error;
-mod query;
+extern crate rust_db;
+#[macro_use] extern crate log;
 
 use log::LogLevelFilter;
-use storage::database::*;
-use storage::column::Column;
-use storage::table::Table;
+use rust_db::storage::database::*;
+use rust_db::storage::column::Column;
+use rust_db::storage::table::Table;
+use rust_db::logger;
 
 fn main() {
     let log = logger::Builder::new(LogLevelFilter::Info);

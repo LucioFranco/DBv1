@@ -3,6 +3,10 @@ name = "rust_db"
 version = "0.1.0"
 authors = ["Lucio Franco <lucio.franco@du.edu>"]
 
+[lib]
+name = "rust_db"
+path = "src/lib.rs"
+
 [[bin]]
 name = "db-server"
 path = "src/main.rs"
