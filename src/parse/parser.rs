@@ -330,7 +330,17 @@ mod test {
     #[test]
     fn select() {
         let mut p = Parser::from_query("select name, email from users;");
-        p.parse().unwrap();
+        let q = p.parse().unwrap();
+
+        let q_exp = Query::Table(TableStmt::Select(SelectStmt {
+            table: Table {
+                name: "users".into(),
+                alias: None
+            },
+            cols: vec![Col { name: "name".into() }, Col { name: "email".into() }]
+        }));
+
+        assert_eq!(q_exp, q);
     }
 
     #[test]
