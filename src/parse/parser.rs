@@ -345,19 +345,19 @@ mod test {
         let mut p = Parser::from_query("INSERT INTO users (name, email) VALUES (\"first last\", \"first.last@example.com\");");
         let q = p.parse().unwrap();
 
-        // let mut cols = HashMap::new();
-        // cols.insert(Col { name: "name".to_owned() }, Lit::String("first last".to_owned()));
-        // cols.insert(Col { name: "email".to_owned() }, Lit::String("first.last@example.com".to_owned()));
-        //
-        //
-        //
-        // let q_exp = Query::Table(TableStmt::Insert(InsertStmt {
-        //     table: Table {
-        //         name: "users".to_owned(),
-        //         alias: None,
-        //     },
-        //     cols: cols,
-        // }));
+        let mut cols = HashMap::new();
+        cols.insert(Col { name: "name".to_owned() }, Lit::String("first last".to_owned()));
+        cols.insert(Col { name: "email".to_owned() }, Lit::String("first.last@example.com".to_owned()));
+
+        let q_exp = Query::Table(TableStmt::Insert(InsertStmt {
+            table: Table {
+                name: "users".to_owned(),
+                alias: None,
+            },
+            cols: cols,
+        }));
+
+        assert_eq!(q_exp, q);
     }
 
     #[test]
